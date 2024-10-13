@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Meta tags for character encoding and responsiveness -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia Climate Change Visualization Portal</title>
+
+    <!-- External CSS file -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Vega libraries for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+    <!-- Inline CSS style for chart titles -->
+    <style>
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header section with navigation -->
+    <header>
+        <h1>Australia Climate Change Visualization Portal</h1>
+        <nav>
+            <ul>
+                <li><a href="#historical">Historical Climate</a></li>
+                <li><a href="#Regional">Weather Station Data</a></li>
+                <li><a href="#Future">What the Future Holds</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Historical climate section -->
+    <section id="historical" class="mycard">
+        <h3>Australia's Historical Climate</h3>
+        <p>
+            Welcome to the Weather Change Visualization page. Here you can find visualizations of weather data over time.
+            <a href="https://www.climatechangeinaustralia.gov.au/en/obtain-data/download-datasets/#ARD-Stn">Data Source</a>
+        </p>
+        <p>
+            Discover historical and future climate data, sector-specific climate information, impacts, key vulnerabilities, and the adaptation measures being implemented. Check out the overview for a comprehensive understanding of how climate change is influencing various aspects.
+        </p>
+        <p>
+            This section provides an overview of Australia’s climate for the period 1991-2020, based on observed historical data. This information is essential for understanding current climate conditions and for anticipating future climate scenarios and changes.
+        </p>
+    </section>
+
+    <!-- Historical graphs section -->
+    <section id="historicalGraph">
+        <div class="row">
+            <!-- Line chart for annual mean surface air temperature -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Observed Annual Average Mean Surface Air Temperature of Australia (1901-2020)</p>
+                    <div style="width: 100%;" id="vis01"></div> <!-- Visualization container -->
+                </div>
+            </div>
+            <!-- Bar chart for seasonal temperatures -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Observed Average Seasonal Min, Max, and Mean Temperature over the Last 120 Years</p>
+                    <div style="width: 100%;" id="vis02"></div> <!-- Visualization container -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Regional details section -->
+    <section id="Regional" class="mycard">
+        <h3>Get Regional Details</h3>
+        <p>
+            This section provides an interactive geographical map for all the weather stations to observe average max temperature.
+        </p>
+    </section>
+
+    <!-- Regional graphs section -->
+    <section id="Regional Graph">
+        <div class="row">
+            <!-- Map visualization -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Australia Map. Click on a data point to view max temperature for a particular location.</p>
+                    <div style="width: 100%;" id="vis11"></div> <!-- Map container -->
+                </div>
+            </div>
+            <!-- Line chart for selected location's temperature -->
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Average Max Surface Air Temperature of Selected Location (1975-2020)</p>
+                    <div style="width: 100%;" id="vis12"></div> <!-- Visualization container -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future prediction section -->
+    <section id="Future" class="mycard">
+        <h3>Future Prediction</h3>
+        <p>
+            This section provides an overview of Australia’s climate for the period 2020-2100, based on prediction models. This information is essential for understanding current climate conditions and for anticipating future climate scenarios and changes.
+        </p>
+    </section>
+
+    <!-- Future graphs section -->
+    <section id="FutureGraph">
+        <div class="row">
+            <!-- Line chart for historical and future temperatures -->
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Australia Historical Mean Temperature Along with Future Prediction</p>
+                    <div style="width: 100%;" id="vis21"></div> <!-- Visualization container -->
+                </div>
+            </div>
+            <!-- Bar chart for future temperature predictions -->
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-12 mycard">
+                    <p class="chart-title">Bar Chart of Australia Future Temperature Predictions</p>
+                    <div style="width: 100%;" id="vis22"></div> <!-- Visualization container -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer section -->
+    <footer>
+        <p>© 2024 Australia Climate Change Portal. Ibrahim Alfaidi. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript code for Vega-Lite visualizations -->
+    <script type="text/javascript">
+        // ------------------------------------------------------------------
+        // Line Chart: Observed Annual Average Mean Surface Air Temperature
+        var AnnualTempDataGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Observed Annual Average Mean Surface Air Temperature of Australia.",
+            "data": {
+                "url": "Data/AusMeanSurfaceTemp.csv" // Data source
+            },
+            "mark": {
+                "type": "line",
+                "point": true // Display data points on the line
+            },
+            "encoding": {
+                "x": {
+                    "title": "Year",
+                    "field": "Category",
+                    "type": "temporal" // Temporal data type for time series
+                },
+                "y": {
+                    "field": "Annual Mean",
+                    "type": "quantitative",
+                    "scale": {
+                        "domain": [27, 31] // Y-axis range
+                    }
+                }
+            },
+            "width": 1000,
+            "height": 500,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+        vegaEmbed('#vis01', AnnualTempDataGraph);
+
+        // ------------------------------------------------------------------
+        // Bar Chart: Observed Average Seasonal Min, Max, and Mean Temperature
+        var SeassionalMeanTempGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {
+                "url": "Data/SeassionalMeanTemp.csv" // Data source
+            },
+            "params": [
+                {
+                    "name": "Select", // Parameter for selecting temperature type
+                    "value": "Mean",
+                    "bind": {
+                        "input": "select",
+                        "options": ["Min", "Max", "Mean"],
+                        "labels": ["Minimum Temperature", "Maximum Temperature", "Mean Temperature"],
+                        "name": "Select Category:"
+                    }
+                }
+            ],
+            "transform": [
+                {
+                    "filter": {
+                        "field": "DataType",
+                        "equal": {
+                            "expr": "Select" // Filter data based on selection
+                        }
+                    }
+                },
+                {
+                    "fold": ["DJF", "MAM", "JJA", "SON"], // Reshape data for seasons
+                    "as": ["Season", "Temperature"]
+                },
+                {
+                    "calculate": "datum.Season == 'DJF' ? 'Dec-Feb' : datum.Season == 'MAM' ? 'Mar-May' : datum.Season == 'JJA' ? 'Jun-Aug' : 'Sep-Nov'",
+                    "as": "SeasonLabel" // Convert season codes to labels
+                }
+            ],
+            "mark": {
+                "type": "bar",
+                "tooltip": true // Enable tooltips
+            },
+            "encoding": {
+                "x": {
+                    "field": "CLIMATOLOGY",
+                    "type": "nominal",
+                    "title": "Climatology"
+                },
+                "y": {
+                    "field": "Temperature",
+                    "type": "quantitative",
+                    "title": "Temperature"
+                },
+                "color": {
+                    "field": "SeasonLabel",
+                    "type": "nominal",
+                    "title": "Season (Months)"
+                },
+                "xOffset": {
+                    "field": "SeasonLabel" // Offset bars by season
+                }
+            },
+            "config": {
+                "mark": {
+                    "invalid": null // Handle invalid data
+                },
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 16,
+                    "titleFontSize": 16
+                }
+            },
+            "width": 1000,
+            "height": 500
+        };
+        vegaEmbed('#vis02', SeassionalMeanTempGraph);
+
+        // -------------------------------------------------------------------
+        // Map and Interactive Line Chart for Regional Data
+        var myFunction; // Function to update the selected location
+
+        // Map visualization showing weather stations
+        var map = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "A map of Australia showing its states and territories.",
+            "width": 'container',
+            "height": 350,
+            "layer": [
+                // Base map layer with states
+                {
+                    "data": {
+                        "url": "Data/australia.json", // GeoJSON data for Australia
+                        "format": {
+                            "property": "features"
+                        }
+                    },
+                    "mark": "geoshape",
+                    "encoding": {
+                        "color": {
+                            "value": "#cccccc" // Grey color for states
+                        },
+                        "tooltip": {
+                            "field": "properties.STATE_NAME",
+                            "type": "nominal",
+                            "title": "State"
+                        }
+                    },
+                    "projection": {
+                        "type": "mercator" // Map projection type
+                    }
+                },
+                // Layer with weather station points
+                {
+                    "data": {
+                        "url": "Data/AustralianAverageMaxTemp.csv" // Data source for stations
+                    },
+                    "params": [
+                        {
+                            "name": "mySelection",
+                            "select": {
+                                "type": "point",
+                                "on": "click" // Select on click
+                            }
+                        }
+                    ],
+                    "projection": {
+                        "type": "mercator"
+                    },
+                    "mark": "circle",
+                    "encoding": {
+                        "longitude": {
+                            "field": "long",
+                            "type": "quantitative"
+                        },
+                        "latitude": {
+                            "field": "lat",
+                            "type": "quantitative"
+                        },
+                        "tooltip": {
+                            "field": "name",
+                            "type": "nominal"
+                        },
+                        "size": {
+                            "condition": [
+                                {
+                                    "param": "mySelection",
+                                    "empty": false,
+                                    "value": 800 // Larger size when selected
+                                }
+                            ],
+                            "value": 70 // Default size
+                        }
+                    }
+                }
+            ],
+            "config": {
+                "legend": {
+                    "labelFontSize": 12,
+                    "titleFontSize": 14
+                }
+            }
+        };
+
+        // Line chart for the selected weather station
+        var AvgTemperatureCitiesGraph = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Average Maximum Temperature of Selected Location over Time.",
+            "data": {
+                "url": "Data/AustralianAverageMaxTemp.csv" // Data source
+            },
+            "params": [
+                {
+                    "name": "name",
+                    "select": {
+                        "type": "point",
+                        "fields": ["name"]
+                    },
+                    "bind": "legend" // Bind selection to legend
+                },
+                {
+                    "name": "selectedPoint",
+                    "value": "BARCALDINE" // Default location
+                }
+            ],
+            "transform": [
+                {
+                    "filter": {
+                        "field": "name",
+                        "equal": {
+                            "expr": "selectedPoint" // Filter data for selected location
+                        }
+                    }
+                }
+            ],
+            "mark": {
+                "type": "line",
+                "point": true
+            },
+            "encoding": {
+                "x": {
+                    "field": "Year",
+                    "type": "temporal",
+                    "title": "Year"
+                },
+                "y": {
+                    "field": "Temp",
+                    "type": "quantitative",
+                    "title": "Temperature (°C)",
+                    "scale": {
+                        "domain": [10, 41]
+                    }
+                },
+                "color": {
+                    "field": "name",
+                    "type": "nominal",
+                    "title": "Location"
+                },
+                "opacity": {
+                    "condition": {
+                        "param": "name",
+                        "value": 1
+                    },
+                    "value": 0.2
+                }
+            },
+            "width": 800,
+            "height": 500,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+
+        // Embed the map visualization
+        vegaEmbed('#vis11', map).then(function (result) {
+            // Access the Vega view instance
+            var view = result.view;
+
+            // Event listener to update the selected location
+            view.addEventListener('click', function (event, item) {
+                var selectedData = item.datum.name;
+                console.log('Selected Data:', selectedData);
+                myFunction(selectedData); // Update line chart with new location
+            });
+        }).catch(console.error);
+
+        // Embed the line chart visualization
+        vegaEmbed('#vis12', AvgTemperatureCitiesGraph).then(function (result) {
+            // Access the Vega view instance
+            var view = result.view;
+
+            // Function to update the selected location parameter
+            myFunction = function updateParameter(newValue) {
+                view.signal('selectedPoint', newValue).run();
+            };
+        });
+
+        // ------------------------------------------------------------------
+        // Line Chart: Australia Historical Mean Temperature with Future Prediction
+        var future = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "Australia Historical Mean Temperature along with Future Predictions.",
+            "data": {
+                "url": "Data/AusFutureTemp.csv",
+                "format": {
+                    "type": "csv" // Data format
+                }
+            },
+            "params": [
+                {
+                    "name": "category",
+                    "select": {
+                        "type": "point",
+                        "fields": ["key"]
+                    },
+                    "bind": "legend" // Bind selection to legend
+                }
+            ],
+            "transform": [
+                {
+                    "fold": ["Historical1995-2014", "2020-2039", "2040-2059", "2060-2079", "2080-2099"],
+                    "as": ["key", "value"] // Reshape data for plotting
+                }
+            ],
+            "mark": "line",
+            "encoding": {
+                "x": {
+                    "field": "month",
+                    "type": "nominal",
+                    "title": "Month"
+                },
+                "y": {
+                    "field": "value",
+                    "type": "quantitative",
+                    "title": "Mean Temperature",
+                    "scale": {
+                        "domain": [10, 40]
+                    }
+                },
+                "color": {
+                    "field": "key",
+                    "type": "nominal",
+                    "title": "Duration"
+                },
+                "opacity": {
+                    "condition": {
+                        "param": "category",
+                        "value": 1 // Full opacity when selected
+                    },
+                    "value": 0.2 // Reduced opacity when not selected
+                }
+            },
+            "width": 1200,
+            "height": 300,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+
+        vegaEmbed('#vis21', future);
+
+        // ------------------------------------------------------------------
+        // Bar Chart: Australia Future Temperature Predictions
+        var futureBarChart = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "description": "A bar chart showing future temperature predictions.",
+            "data": {
+                "url": "Data/AusFutureTemp.csv",
+                "format": {
+                    "type": "csv"
+                }
+            },
+            "transform": [
+                {
+                    "fold": ["Historical1995-2014", "2020-2039", "2040-2059", "2060-2079", "2080-2099"],
+                    "as": ["key", "value"] // Reshape data for plotting
+                }
+            ],
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "month",
+                    "type": "nominal",
+                    "title": "Month"
+                },
+                "y": {
+                    "field": "value",
+                    "type": "quantitative",
+                    "title": "Mean Temperature"
+                },
+                "color": {
+                    "field": "key",
+                    "type": "nominal",
+                    "title": "Duration"
+                }
+            },
+            "width": 1200,
+            "height": 300,
+            "config": {
+                "axis": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                },
+                "legend": {
+                    "labelFontSize": 14,
+                    "titleFontSize": 16
+                }
+            }
+        };
+
+        vegaEmbed('#vis22', futureBarChart);
+    </script>
+</body>
+</html>
